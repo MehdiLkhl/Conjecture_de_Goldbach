@@ -1,0 +1,163 @@
+---
+title: "Conjecture de Goldbach"
+author: "Lekhal Mehdi"
+date: "11/07/2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Conjecture de Goldbach
+
+Je Propose, aujourd'hui, une solution permettant de tester la conjecture de Goldbach des j premier pair sur r.
+
+Dans un courrier adressé à Leonhard Euler, son contemporain Christian Goldbach lui propose la conjecture suivante :
+
+```{r}
+#Tout entiers pair s'écrit comme la somme de deux nombres premiers
+```
+
+La version moderne admet une légère modification : 
+
+```{r}
+#Tout entiers pair superieur à 2 s'écrit comme la somme de deux nombres premiers
+```
+
+2 ne respecte pas la conjecture, en effet 2 ne peut s'ecrire que comme la somme de 1 par 1, 1, autrefois considéré comme premier, ne l'est pas mais est un nombre second, 2 ne peut donc pas s'écrire comme la somme de deux nombres premier.
+
+
+## Nombre de pair à tester
+
+J'affecte à j la quantité de nombre que je veux tester dans le cadre de la conjecture de goldbach, ici je choisis de tester sur les 100 premier pair, il suffira ensuite de changer la valeur de j afin de tester les j premier pair:
+
+```{r}
+j <- 100
+```
+
+## création de la séquence de nombre pair
+
+Je crée une séquence de nombre allant de 3 à j, je choisis d'exclure 2.
+
+Puis je crée un masque à l'aide du modulo 2. En clair, je décide de conserver les nombres qui, divisé par deux, ont un reste égal à 0, soit des nombres pairs.
+
+
+```{r}
+nombre <- seq(3,j)
+nombre_pair <- nombre[nombre%%2==0]  
+nombre_pair
+```
+
+
+## création de la séquence de nombre premier
+
+Je crée une séquence de nombre premier, je génère ainsi les nombres premiers compris entre 0 et j.
+
+Je n'ai pas créé cette fonction, cette dernière est disponible sur le site suivant :
+https://www.w3resource.com/r-programming-exercises/basic/r-programming-basic-exercise-6.php
+
+```{r}
+prime_numbers <- function(n) {
+  if (n >= 2) {
+    x = seq(2, n)
+    prime_nums = c()
+    for (i in seq(2, n)) {
+      if (any(x == i)) {
+        prime_nums = c(prime_nums, i)
+        x = c(x[(x %% i) != 0], i)
+      }
+    }
+    return(prime_nums)
+  }
+  else 
+  {
+    stop("Input number should be at least 2.")
+  }
+} 
+nombre_premier <- prime_numbers(j)
+nombre_premier
+```
+
+
+## somme des nombres premiers
+
+La fonction expand.grid me permet de créer toutes les combinaisons possibles entre les deux listes proposées en argument sous la forme de deux colonnes.
+
+Puis, je somme mes deux colonnes. J'obtiens alors la somme de tous les nombres premiers compris entre 1 et j.
+```{r}
+l <- expand.grid(nombre_premier, nombre_premier)
+
+ll <- l[1]+l[2]
+length(t(ll))
+head(ll)
+```
+
+Certains nombres pairs pouvant s'écrire comme étant la somme de plusieurs combinaisons de nombre premier : 
+
+```{r}
+#10 par exemple peut s'écrire comme :
+#3+7=10
+#5+5=10
+```
+
+j'utilise la fonction unique() afin de ne garder qu'une des occurrences.
+
+
+```{r}
+somme_premier <- unique(ll)
+length(t(somme_premier))
+head(somme_premier)
+```
+
+
+Ne voulant que la somme des premier pairs, je réutilise le modulo 2
+
+```{r}
+somme_premier_pair <- somme_premier[somme_premier%%2==0]
+somme_premier_pair
+```
+
+
+## Test logique
+
+Je réalise un test logique afin de savoir si les nombres compris dans la variable nombre_pair son compris dans somme_premier_pair
+
+```{r}
+test <- nombre_pair %in% somme_premier_pair
+test
+```
+
+Je fais le choix d'inverser mes valeurs logiques afin que le masque ne me renvoie que les nombres pairs qui ne respecteraient pas la conjecture.
+
+```{r}
+masque <- !test
+masque
+```
+
+Je teste donc la conjecture.
+
+```{r}
+nombre_pair[masque]
+```
+
+## Conclusion
+
+Pour les 100 premiers pair superieur à 2, tous respectent la conjecture de Goldbach.
+il nous appartient de tester la conjecture pour les 200, 500, 1000, etc. premier pair en changeant la valeur comprise dans l'objet j.
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+________________________________________________________________________________________
